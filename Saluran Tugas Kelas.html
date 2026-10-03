@@ -1,0 +1,624 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Saluran Tugas Kelas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: satu kolom selebar ponsel seperti saluran chat; pengumuman tampil sebagai gelembung, alat admin menempel di atas feed. */
+:root {
+  --bg: #f1f5f2;
+  --surface: #ffffff;
+  --ink: #15211b;
+  --muted: #5b6a63;
+  --line: #d9e2dc;
+  --accent: #1f6b4f;
+  --accent-ink: #ffffff;
+  --accent-soft: #e0efe7;
+  --warn: #9a5b00;
+  --warn-soft: #fbeccb;
+  --crit: #b3261e;
+  --crit-soft: #fbe1de;
+  --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1613; --surface: #18221d; --ink: #e7efe9; --muted: #98a9a0; --line: #2a3831;
+    --accent: #5cc29a; --accent-ink: #0b1d15; --accent-soft: #1d3329;
+    --warn: #f0b34a; --warn-soft: #3a2c10; --crit: #ff8a80; --crit-soft: #3d1c19;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1613; --surface: #18221d; --ink: #e7efe9; --muted: #98a9a0; --line: #2a3831;
+  --accent: #5cc29a; --accent-ink: #0b1d15; --accent-soft: #1d3329;
+  --warn: #f0b34a; --warn-soft: #3a2c10; --crit: #ff8a80; --crit-soft: #3d1c19;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; }
+h1, h2, h3, p { margin: 0; }
+h1, h2 { font-family: var(--display); text-wrap: balance; line-height: 1.15; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.15rem; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 12px 16px;
+}
+.top-in { max-width: 640px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+.brand { font-family: var(--display); font-weight: 700; font-size: 1.1rem; flex: 1; min-width: 0; }
+.role { font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 99px; padding: 2px 10px; }
+
+.wrap { max-width: 640px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 64px; }
+.view { display: flex; flex-direction: column; gap: 20px; }
+.lede { color: var(--muted); max-width: 60ch; }
+.note { color: var(--muted); font-size: .9rem; }
+.label { font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+.btn {
+  border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+  border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+}
+.btn:disabled { opacity: .55; cursor: default; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn.quiet { background: transparent; border-color: var(--line); color: var(--muted); font-weight: 500; padding: 6px 12px; font-size: .875rem; }
+.btn.danger { background: transparent; border-color: var(--line); color: var(--crit); font-weight: 500; padding: 6px 12px; font-size: .875rem; }
+.btn.armed { background: var(--crit-soft); border-color: var(--crit); color: var(--crit); }
+.link { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; cursor: pointer; text-align: left; }
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-size: .875rem; font-weight: 600; }
+.field input, .field textarea {
+  width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px;
+}
+.field textarea { min-height: 96px; resize: vertical; }
+.form { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.row > .field { flex: 1 1 180px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* daftar saluran */
+.chans { display: flex; flex-direction: column; gap: 10px; }
+.chan {
+  display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px;
+}
+.chan:hover { border-color: var(--accent); }
+.avatar {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 1.1rem;
+}
+.chan-txt { min-width: 0; flex: 1; }
+.chan-name { font-weight: 600; overflow-wrap: anywhere; }
+.chan-desc { color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
+.empty { border: 1px dashed var(--line); border-radius: var(--r); padding: 20px 16px; color: var(--muted); }
+
+.slots { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
+.slot { width: 22px; height: 10px; border-radius: 3px; border: 1px solid var(--accent); }
+.slot.used { background: var(--accent); }
+
+/* halaman saluran */
+.chan-head { display: flex; align-items: center; gap: 14px; }
+.chan-head h1 { font-size: 1.4rem; overflow-wrap: anywhere; }
+.invite { display: flex; gap: 8px; }
+.invite input { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: .9rem; }
+
+.feed { display: flex; flex-direction: column; gap: 12px; }
+.post {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 4px var(--r) var(--r) var(--r);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; max-width: 560px;
+}
+.post-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tag { background: var(--accent-soft); color: var(--accent); font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; border-radius: 6px; padding: 2px 8px; overflow-wrap: anywhere; }
+.time { color: var(--muted); font-size: .8rem; margin-left: auto; font-variant-numeric: tabular-nums; }
+.post h3 { font-size: 1.05rem; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.post-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.due { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.chip { font-size: .8rem; font-weight: 600; border-radius: 99px; padding: 2px 10px; background: var(--accent-soft); color: var(--accent); }
+.chip.warn { background: var(--warn-soft); color: var(--warn); }
+.chip.crit { background: var(--crit-soft); color: var(--crit); }
+.post-foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 10px; }
+.check { background: transparent; border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px; font-size: .875rem; cursor: pointer; color: var(--muted); }
+.check[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.post.is-done h3, .post.is-done .post-body { color: var(--muted); }
+.spacer { flex: 1; }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: .9rem;
+  max-width: calc(100% - 32px); z-index: 10;
+}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Saluran Tugas Kelas</div>
+    <div class="role" id="role" hidden></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="view" id="v-load">
+    <h1>Membuka saluran…</h1>
+    <p class="lede">Pengumuman tugas dari pengurus kelas akan muncul di sini.</p>
+  </section>
+
+  <section class="view" id="v-nodb" hidden>
+    <h1>Belum bisa dibuka</h1>
+    <p class="lede">Halaman ini hanya bisa dibaca setelah kamu masuk ke akun Claude dan membukanya lewat link undangan dari pengurus kelas.</p>
+  </section>
+
+  <section class="view" id="v-home" hidden>
+    <div>
+      <h1 id="home-title">Saluran kelasmu</h1>
+      <p class="lede" id="home-lede"></p>
+    </div>
+    <div class="chans" id="chan-list"></div>
+
+    <div class="panel" id="join-box" hidden>
+      <h2>Masuk lewat undangan</h2>
+      <form class="form" id="join-form">
+        <div class="field">
+          <label for="join-code">Link atau kode undangan</label>
+          <input id="join-code" autocomplete="off" placeholder="Tempel link dari pengurus kelas">
+        </div>
+        <div class="actions"><button class="btn" type="submit" id="join-btn">Masuk saluran</button></div>
+      </form>
+    </div>
+
+    <div class="panel" id="create-box" hidden>
+      <h2>Buat saluran</h2>
+      <div class="slots" id="slots"></div>
+      <form class="form" id="create-form">
+        <div class="field">
+          <label for="new-name">Nama saluran</label>
+          <input id="new-name" maxlength="40" required placeholder="Contoh: XI IPA 2">
+        </div>
+        <div class="field">
+          <label for="new-desc">Keterangan singkat</label>
+          <input id="new-desc" maxlength="120" placeholder="Contoh: Info tugas dan ulangan semester ganjil">
+        </div>
+        <div class="actions"><button class="btn" type="submit" id="create-btn">Buat saluran</button></div>
+      </form>
+      <p class="note" id="create-full" hidden>Batas 2 saluran sudah terpakai. Hapus salah satu untuk membuat yang baru.</p>
+    </div>
+  </section>
+
+  <section class="view" id="v-chan" hidden>
+    <div><button class="link" id="back" type="button">← Semua saluran</button></div>
+    <div class="chan-head">
+      <div class="avatar" id="c-avatar"></div>
+      <div class="chan-txt">
+        <h1 id="c-name"></h1>
+        <p class="chan-desc" id="c-desc"></p>
+      </div>
+    </div>
+
+    <div class="panel" id="invite-box" hidden>
+      <div class="label" id="invite-label">Link undangan</div>
+      <div class="invite">
+        <input id="invite-link" readonly aria-labelledby="invite-label">
+        <button class="btn" type="button" id="invite-copy">Salin</button>
+      </div>
+      <p class="note">Hanya yang membuka link ini yang bisa masuk ke saluran. Anggota cuma bisa membaca.</p>
+    </div>
+
+    <div class="panel" id="compose-box" hidden>
+      <h2>Umumkan tugas</h2>
+      <form class="form" id="post-form">
+        <div class="row">
+          <div class="field">
+            <label for="p-mapel">Mata pelajaran</label>
+            <input id="p-mapel" maxlength="30" required placeholder="Matematika">
+          </div>
+          <div class="field">
+            <label for="p-due">Tenggat (opsional)</label>
+            <input id="p-due" type="date">
+          </div>
+        </div>
+        <div class="field">
+          <label for="p-title">Judul tugas</label>
+          <input id="p-title" maxlength="100" required placeholder="Latihan 3.2 nomor 1–10">
+        </div>
+        <div class="field">
+          <label for="p-body">Detail</label>
+          <textarea id="p-body" maxlength="2000" placeholder="Dikerjakan di buku tugas, dikumpulkan ke ketua kelas."></textarea>
+        </div>
+        <div class="actions"><button class="btn" type="submit" id="post-btn">Umumkan</button></div>
+      </form>
+    </div>
+
+    <div class="feed" id="feed"></div>
+
+    <div class="actions">
+      <button class="btn quiet" type="button" id="leave" hidden>Keluar dari saluran</button>
+      <button class="btn danger" type="button" id="del-chan" hidden>Hapus saluran</button>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const ARTIFACT_URL = "";
+const MAX_CHANNELS = 2;
+
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+let db = null;
+let isAdmin = false;
+let joined = store.get("joined", []);
+let done = store.get("done", {});
+const channels = new Map();
+const chanSubs = new Map();
+let openCode = null;
+let postsUnsub = null;
+let posts = null;
+
+function el(tag, attrs, ...kids) {
+  const n = document.createElement(tag);
+  for (const k in (attrs || {})) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids) if (c != null) n.append(c);
+  return n;
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3500);
+}
+
+function show(view) {
+  for (const v of ["load", "nodb", "home", "chan"]) $("v-" + v).hidden = v !== view;
+}
+
+// Tombol hapus dua langkah: klik pertama mempersenjatai, klik kedua menjalankan.
+function armed(btn, label) {
+  if (btn.dataset.armed) return true;
+  const old = btn.textContent;
+  btn.dataset.armed = "1";
+  btn.textContent = label;
+  btn.classList.add("armed");
+  setTimeout(() => {
+    delete btn.dataset.armed;
+    btn.textContent = old;
+    btn.classList.remove("armed");
+  }, 4000);
+  return false;
+}
+
+function parseCode(text) {
+  let s = String(text || "").trim();
+  if (s.includes("#")) s = s.slice(s.lastIndexOf("#") + 1);
+  s = s.toLowerCase();
+  return /^[a-z0-9]{6,12}$/.test(s) ? s : null;
+}
+
+function newCode() {
+  const abc = "abcdefghjkmnpqrstuvwxyz23456789";
+  const buf = crypto.getRandomValues(new Uint8Array(8));
+  return Array.from(buf, (b) => abc[b % abc.length]).join("");
+}
+
+function errText(e) {
+  if (e && e.code === "quota_exceeded") return "Penyimpanan penuh. Hapus pengumuman lama dulu.";
+  if (e && e.code === "invalid_argument") return "Kamu tidak punya izin untuk mengubah saluran ini.";
+  return "Gagal menyimpan. Coba lagi sebentar.";
+}
+
+/* ---------- beranda ---------- */
+
+function renderHome() {
+  const list = $("chan-list");
+  const items = [...channels.entries()].sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+  list.replaceChildren();
+  for (const [code, c] of items) {
+    list.append(el("button", { class: "chan", type: "button", onclick: () => openChannel(code) },
+      el("div", { class: "avatar", text: (c.name || "?").trim().charAt(0).toUpperCase() }),
+      el("div", { class: "chan-txt" },
+        el("div", { class: "chan-name", text: c.name || "Tanpa nama" }),
+        c.desc ? el("div", { class: "chan-desc", text: c.desc }) : null)));
+  }
+  if (!items.length) {
+    list.append(el("div", { class: "empty", text: isAdmin
+      ? "Belum ada saluran. Buat saluran pertama untuk kelasmu di bawah, lalu bagikan link undangannya."
+      : "Kamu belum masuk ke saluran mana pun. Buka link undangan dari pengurus kelas, atau tempel di bawah." }));
+  }
+  $("home-lede").textContent = isAdmin
+    ? "Kamu pengurus. Buat saluran, umumkan tugas, dan bagikan link undangan ke teman sekelas."
+    : "Pengumuman tugas dari pengurus kelas. Kamu bisa membaca dan menandai tugas yang sudah selesai.";
+  $("join-box").hidden = isAdmin;
+  $("create-box").hidden = !isAdmin;
+  if (isAdmin) {
+    const used = Math.min(channels.size, MAX_CHANNELS);
+    const slots = $("slots");
+    slots.replaceChildren();
+    for (let i = 0; i < MAX_CHANNELS; i++) slots.append(el("span", { class: "slot" + (i < used ? " used" : "") }));
+    slots.append(el("span", { text: used + " dari " + MAX_CHANNELS + " saluran terpakai" }));
+    const full = channels.size >= MAX_CHANNELS;
+    $("create-form").hidden = full;
+    $("create-full").hidden = !full;
+  }
+}
+
+function goHome() {
+  if (postsUnsub) { postsUnsub(); postsUnsub = null; }
+  openCode = null;
+  posts = null;
+  renderHome();
+  show("home");
+}
+
+/* ---------- saluran ---------- */
+
+function watchChannel(code) {
+  if (chanSubs.has(code)) return;
+  const unsub = db.doc("channels/" + code).onSnapshot((snap) => {
+    if (snap.exists) {
+      channels.set(code, snap.data());
+    } else if (!snap.metadata.fromCache) {
+      channels.delete(code);
+      forget(code);
+      if (openCode === code) { toast("Saluran ini sudah dihapus pengurus."); goHome(); return; }
+    }
+    if (openCode === code) renderChanHead(); else if (!openCode) renderHome();
+  }, () => {});
+  chanSubs.set(code, unsub);
+}
+
+function forget(code) {
+  const u = chanSubs.get(code);
+  if (u) { u(); chanSubs.delete(code); }
+  joined = joined.filter((c) => c !== code);
+  store.set("joined", joined);
+}
+
+async function enter(code) {
+  if (channels.has(code)) { openChannel(code); return true; }
+  let snap;
+  try { snap = await db.doc("channels/" + code).get(); }
+  catch (e) { toast("Gagal membuka saluran. Coba lagi sebentar."); return false; }
+  if (!snap.exists) { toast("Link ini tidak berlaku atau salurannya sudah dihapus."); return false; }
+  channels.set(code, snap.data());
+  if (!isAdmin) {
+    if (!joined.includes(code)) { joined.push(code); store.set("joined", joined); }
+    watchChannel(code);
+  }
+  openChannel(code);
+  return true;
+}
+
+function openChannel(code) {
+  if (postsUnsub) { postsUnsub(); postsUnsub = null; }
+  openCode = code;
+  posts = null;
+  renderChanHead();
+  renderFeed();
+  show("chan");
+  window.scrollTo(0, 0);
+  postsUnsub = db.collection("channels/" + code + "/posts").orderBy("createdAt", "desc").limit(200)
+    .onSnapshot((snap) => {
+      posts = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+      renderFeed();
+    }, () => { toast("Pengumuman tidak bisa dimuat. Muat ulang halaman."); });
+}
+
+function renderChanHead() {
+  const c = channels.get(openCode) || {};
+  $("c-name").textContent = c.name || "Saluran";
+  $("c-desc").textContent = c.desc || "";
+  $("c-avatar").textContent = (c.name || "?").trim().charAt(0).toUpperCase();
+  $("invite-box").hidden = !isAdmin;
+  $("compose-box").hidden = !isAdmin;
+  $("del-chan").hidden = !isAdmin;
+  $("leave").hidden = isAdmin;
+  $("invite-label").textContent = ARTIFACT_URL ? "Link undangan" : "Kode undangan";
+  $("invite-link").value = ARTIFACT_URL ? ARTIFACT_URL + "#" + openCode : openCode;
+}
+
+const fmtDate = new Intl.DateTimeFormat("id-ID", { weekday: "short", day: "numeric", month: "short" });
+const fmtTime = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function dueInfo(str) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(str || "");
+  if (!m) return null;
+  const due = new Date(+m[1], +m[2] - 1, +m[3]);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((due - today) / 86400000);
+  let chip, tone = "";
+  if (days < 0) { chip = "Lewat " + (-days) + " hari"; tone = "crit"; }
+  else if (days === 0) { chip = "Hari ini"; tone = "warn"; }
+  else if (days === 1) { chip = "Besok"; tone = "warn"; }
+  else chip = days + " hari lagi";
+  return { label: fmtDate.format(due), chip, tone };
+}
+
+function renderFeed() {
+  const feed = $("feed");
+  feed.replaceChildren();
+  if (posts === null) { feed.append(el("div", { class: "empty", text: "Memuat pengumuman…" })); return; }
+  if (!posts.length) {
+    feed.append(el("div", { class: "empty", text: isAdmin
+      ? "Belum ada pengumuman. Tulis tugas pertama di formulir di atas."
+      : "Belum ada pengumuman. Tugas baru dari pengurus kelas akan muncul di sini." }));
+    return;
+  }
+  for (const p of posts) {
+    const isDone = !!done[p.id];
+    const due = dueInfo(p.deadline);
+    const foot = el("div", { class: "post-foot" },
+      el("button", { class: "check", type: "button", "aria-pressed": String(isDone),
+        text: isDone ? "✓ Selesai" : "Tandai selesai", onclick: () => toggleDone(p.id) }),
+      el("span", { class: "spacer" }));
+    if (isAdmin) {
+      const del = el("button", { class: "btn danger", type: "button", text: "Hapus" });
+      del.addEventListener("click", () => { if (armed(del, "Yakin hapus?")) deletePost(p.id, del); });
+      foot.append(del);
+    }
+    feed.append(el("article", { class: "post" + (isDone ? " is-done" : "") },
+      el("div", { class: "post-top" },
+        el("span", { class: "tag", text: p.mapel || "Umum" }),
+        el("span", { class: "time", text: p.createdAt ? fmtTime.format(new Date(p.createdAt)) : "" })),
+      el("h3", { text: p.title || "" }),
+      p.body ? el("p", { class: "post-body", text: p.body }) : null,
+      due ? el("div", { class: "due" },
+        el("span", { text: "Tenggat " + due.label }),
+        isDone ? null : el("span", { class: "chip " + due.tone, text: due.chip })) : null,
+      foot));
+  }
+}
+
+function toggleDone(id) {
+  if (done[id]) delete done[id]; else done[id] = 1;
+  store.set("done", done);
+  renderFeed();
+}
+
+async function deletePost(id, btn) {
+  btn.disabled = true;
+  try { await db.doc("channels/" + openCode + "/posts/" + id).delete(); toast("Pengumuman dihapus."); }
+  catch (e) { btn.disabled = false; toast(errText(e)); }
+}
+
+/* ---------- formulir ---------- */
+
+$("back").addEventListener("click", goHome);
+
+$("join-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const code = parseCode($("join-code").value);
+  if (!code) { toast("Kode tidak dikenali. Tempel link undangan lengkap dari pengurus kelas."); return; }
+  $("join-btn").disabled = true;
+  if (await enter(code)) $("join-code").value = "";
+  $("join-btn").disabled = false;
+});
+
+$("create-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const name = $("new-name").value.trim();
+  if (!name) return;
+  const btn = $("create-btn");
+  btn.disabled = true;
+  try {
+    const now = await db.collection("channels").get();
+    if (now.size >= MAX_CHANNELS) { toast("Batas " + MAX_CHANNELS + " saluran sudah terpakai."); return; }
+    const code = newCode();
+    const data = { name, desc: $("new-desc").value.trim(), createdAt: Date.now() };
+    await db.doc("channels/" + code).set(data);
+    channels.set(code, data);
+    $("new-name").value = "";
+    $("new-desc").value = "";
+    openChannel(code);
+    toast("Saluran dibuat. Salin link undangannya untuk dibagikan.");
+  } catch (e) { toast(errText(e)); }
+  finally { btn.disabled = false; }
+});
+
+$("post-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const title = $("p-title").value.trim();
+  const mapel = $("p-mapel").value.trim();
+  if (!title || !mapel || !openCode) return;
+  const btn = $("post-btn");
+  btn.disabled = true;
+  try {
+    await db.collection("channels/" + openCode + "/posts").add({
+      mapel, title, body: $("p-body").value.trim(), deadline: $("p-due").value || "", createdAt: Date.now(),
+    });
+    $("p-title").value = "";
+    $("p-body").value = "";
+    $("p-due").value = "";
+    toast("Diumumkan.");
+  } catch (e) { toast(errText(e)); }
+  finally { btn.disabled = false; }
+});
+
+$("invite-copy").addEventListener("click", () => {
+  const input = $("invite-link");
+  const fallback = () => { input.focus(); input.select(); toast("Tekan Ctrl+C untuk menyalin."); };
+  try { navigator.clipboard.writeText(input.value).then(() => toast("Disalin."), fallback); }
+  catch (e) { fallback(); }
+});
+
+$("leave").addEventListener("click", () => {
+  const btn = $("leave");
+  if (!armed(btn, "Yakin keluar?")) return;
+  const code = openCode;
+  channels.delete(code);
+  forget(code);
+  goHome();
+});
+
+$("del-chan").addEventListener("click", async () => {
+  const btn = $("del-chan");
+  if (!armed(btn, "Yakin hapus saluran dan semua pengumumannya?")) return;
+  const code = openCode;
+  btn.disabled = true;
+  try {
+    const all = await db.collection("channels/" + code + "/posts").limit(1000).get();
+    for (const d of all.docs) await db.doc("channels/" + code + "/posts/" + d.id).delete();
+    await db.doc("channels/" + code).delete();
+    channels.delete(code);
+    toast("Saluran dihapus.");
+    goHome();
+  } catch (e) { toast(errText(e)); }
+  finally { btn.disabled = false; }
+});
+
+/* ---------- mulai ---------- */
+
+async function boot() {
+  const c = window.claude;
+  if (!c || !c.use) { show("nodb"); return; }
+  const [d, user] = await Promise.all([c.use("db"), c.use("user")]);
+  db = d;
+  if (!db) { show("nodb"); return; }
+  isAdmin = user ? await user.canEdit() : false;
+  $("role").textContent = isAdmin ? "Pengurus" : "Anggota";
+  $("role").hidden = false;
+
+  if (isAdmin) {
+    db.collection("channels").onSnapshot((snap) => {
+      channels.clear();
+      for (const doc of snap.docs) channels.set(doc.id, doc.data());
+      if (openCode && !channels.has(openCode) && !snap.metadata.fromCache) { goHome(); return; }
+      if (openCode) renderChanHead(); else renderHome();
+    }, () => {});
+  } else {
+    joined.forEach(watchChannel);
+  }
+
+  renderHome();
+  show("home");
+  const code = parseCode(location.hash);
+  if (code) enter(code);
+  window.addEventListener("hashchange", () => {
+    const next = parseCode(location.hash);
+    if (next && next !== openCode) enter(next);
+  });
+}
+boot();
+</script>
+
+</body></html>
